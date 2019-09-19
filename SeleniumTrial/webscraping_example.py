@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 from selenium.common.exceptions import TimeoutException
 import config
+import os, sys
 
 netID = config.netID
 password = config.password
@@ -11,8 +12,11 @@ password = config.password
 option = webdriver.ChromeOptions()
 option.add_argument(" — incognito")
 
-browser = webdriver.Chrome(executable_path='/Users/derekli/Documents/PersonalProjects/PraireLearnNotifications/SeleniumTrial/chromedriver', chrome_options=option)
-  
+#browser = webdriver.Chrome(executable_path='/Users/derekli/Documents/PersonalProjects/PraireLearnNotifications/SeleniumTrial/chromedriver', chrome_options=option)
+os.path.join(sys.path[0], 'some file.txt')
+browser = webdriver.Chrome(executable_path=os.path.join(sys.path[0], 'chromedriver'), chrome_options=option)
+
+
 browser.get("https://prairielearn.engr.illinois.edu/pl/login")
 
 
@@ -54,26 +58,25 @@ except TimeoutException:
     print("Timed out waiting for page to load")
     browser.quit()
 
-addCoursesButton = browser.find_elements_by_xpath("//*[@id='content']/div/div/a/span")[0]
-addCoursesButton.click()
+addCoursesPageButton = browser.find_elements_by_xpath("//*[@id='content']/div/div/a/span")[0]
+addCoursesPageButton.click()
 
-'''
-# use list comprehension to get the actual repo titles and not the selenium objects.
-titles = [x.text for x in titles_element]
-# print out all the titles.
-print('titles:')
-print(titles, '\n')
-'''
 
-"""
+#Wait for courses to load
+timeout = 20
+try:
+    WebDriverWait(browser, timeout).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div/div/table/tbody/tr[1]/td[2]/a")))
+except TimeoutException:
+    print("Timed out waiting for page to load")
+    browser.quit()
 
-language_element = browser.find_elements_by_xpath("//p[@class=’mb-0 f6 text-gray’]")
-# same concept as for list-comprehension above.
-languages = [x.text for x in language_element]
-print("languages:")
-print(languages, '\n')
 
-for title, language in zip(titles, languages):
-    print("RepoName : Language")
-    print(title + ": " + language, '\n')
-"""
+body = browser.find_elements_by_xpath("/html/body/div/div/table/tbody")[0]
+
+entries = body.find_elements_by_tag_name("tr")
+
+for entry in entries:
+    courses = entry.find_elements_by_class_name("align-middle")
+    for course in courses:
+        print (course.text)
+
