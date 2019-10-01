@@ -92,21 +92,67 @@ def toggleCourses(toggle, browser, max_val = -1):
         #print (cols[1 + toggle].get_attribute("outerHTML"))
         cols[1 + toggle].find_elements_by_tag_name("a")[0].click()
         
-        time.sleep(0.5)
+        #time.sleep(0.5)
+
+        #Wait for menu to load
+        timeout = 20
+
+        time.sleep(0.2)
 
         temp = cols[1 + toggle].find_elements_by_xpath("//button[@type='submit']")[i]
         #temp = cols[1].find_elements_by_class_name("btn btn-info")[0]
 
         temp.click()
         
-        time.sleep(0.5)
+        #Wait for courses to load
+        try:
+            WebDriverWait(browser, timeout).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div/div/table")))
+        except TimeoutException:
+            print("Timed out waiting for page to load")
+            browser.quit()
+
+
+        #time.sleep(0.5)
         
         body = browser.find_elements_by_xpath("/html/body/div/div/table/tbody")[0]
         entries = body.find_elements_by_tag_name("tr")
         if (i == max_val):
             break
 
-toggleCourses(1, browser, 2)
+coursesOn = 1
+if (coursesOn):
+    # 0 to add course 1 to remove course
+    toggleCourses(1, browser, 60)
+
+
+
+browser.get("https://prairielearn.engr.illinois.edu/pl")
+
+course_identifier = "course_instance"
+elems = browser.find_elements_by_xpath("//a[@href]")
+links = []
+for elem in elems:
+    if (course_identifier in str(elem.get_attribute("href"))):
+        print (elem.get_attribute("href"))
+        links.append(elem.get_attribute("href"))
+
+xPathTag = "/html/body/div/div/table"
+for link in links:
+    browser.get(link)
+    body = browser.find_elements_by_xpath(xPathTag)[0]
+
+    courseName = browser.find_elements_by_xpath("/html/body/nav/div/ul[1]/li[1]/span")[0]
+
+
+    #Could be a problem keep in mind
+    script_dir = os.path.dirname(__file__)  
+    path = script_dir + "data/"
+
+    fileName = path + courseName.text[:courseName.text.find(',')].replace("/", "") + ".txt"
+    print (fileName)
+    data_file = open(fileName, "w")
+    data_file.write(body.get_attribute("innerHTML"))
+    data_file.close()
 
 
 '''
