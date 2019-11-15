@@ -14,11 +14,17 @@ def template_test():
 
 @app.route("/info", methods=['POST'])
 def getinfo():
-    test = request.form.getlist('boxes')
+    # Classes user has signed up for
+    classes = request.form.getlist('boxes')
+
+    # Contains name and email
+    user_info = request.form.getlist('user-info')
     final = ""
-    for i in range(len(test)):
-        final += str(test[i])
-    return final
+    classes.extend(user_info)
+
+    for i in range(len(classes)):
+        final += str(classes[i])
+    return render_template('thank_you.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

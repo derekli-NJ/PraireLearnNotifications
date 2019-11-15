@@ -20,34 +20,18 @@
 					<h3>Get PraireLearn Notifications!</h3>
 					<p>Sign up and choose which classes you are in and we will email you when assignments are close to the due date!</p>
 					<label class="form-group">
-						<input type="text" class="form-control"  required>
+						<input type="text" name="user-info" class="form-control"  required>
 						<span>Your Name</span>
 						<span class="border"></span>
 					</label>
 					<label class="form-group">
-						<input type="text" class="form-control"  required>
+						<input type="text" name="user-info" class="form-control"  required>
 						<span for="">Your Mail</span>
 						<span class="border"></span>
 					</label>
-					<label class="form-group">
 					{% for class in classNames%}
 					    <input type="checkbox" value="{{ class }}" name="boxes" >{{class}} <br>
 					{% endfor %}
-					</label>
-					<!--
-					<label class="form-group">
-						{% for n in classNames %}
-						<input type="checkbox" name=loop.index0 value={{n}}> {{n}}<br>
-						{% endfor %}
-  					</label>
-					-->
-					<!--
-					<label class="form-group" >
-						<textarea name="" id="" class="form-control" required></textarea>
-						<span for="">Your Message</span>
-						<span class="border"></span>
-					</label>
-					-->
 					<button>Submit 
 						<i class="zmdi zmdi-arrow-right"></i>
 					</button>
